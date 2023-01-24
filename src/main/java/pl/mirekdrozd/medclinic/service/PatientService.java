@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.mirekdrozd.medclinic.repository.PatientRepository;
-import pl.mirekdrozd.medclinic.service.dto.RequestPatientDto;
-import pl.mirekdrozd.medclinic.service.dto.ResponsePatientDto;
+import pl.mirekdrozd.medclinic.service.dto.PatientDtoIn;
+import pl.mirekdrozd.medclinic.service.dto.PatientDtoOut;
 import pl.mirekdrozd.medclinic.service.mapper.PatientMapper;
 import pl.mirekdrozd.medclinic.service.validator.PatientValidator;
 
@@ -17,23 +17,23 @@ public class PatientService {
     private final PatientRepository patientRepository;
     private final PatientMapper patientMapper;
 
-    public ResponsePatientDto create(RequestPatientDto requestPatientDto) {
-        patientRepository.isPeselTaken(requestPatientDto.getPesel());
-        new PatientValidator(requestPatientDto).validate();
+    public PatientDtoOut create(PatientDtoIn patientDtoIn) {
+        patientRepository.isPeselTaken(patientDtoIn.getPesel());
+        new PatientValidator(patientDtoIn).validate();
 
-        var mappedPatient = patientMapper.toEntity(requestPatientDto);
+        var mappedPatient = patientMapper.toEntity(patientDtoIn);
         var savedPatient = patientRepository.save(mappedPatient);
 
         return patientMapper.toDto(savedPatient);
     }
 
-    public ResponsePatientDto retrieveById(Long id) {
+    public PatientDtoOut retrieveById(Long id) {
         var patient = patientRepository.getOrThrow(id);
         return patientMapper.toDto(patient);
     }
 
 
-    public ResponsePatientDto update(Long id, RequestPatientDto updatedPatient) {
+    public PatientDtoOut update(Long id, PatientDtoIn updatedPatient) {
         var retrievedPatient = patientRepository.getOrThrow(id);
         if (!updatedPatient.getPesel().equals(retrievedPatient.getPesel())) {
             patientRepository.isPeselTaken(updatedPatient.getPesel());
@@ -46,7 +46,7 @@ public class PatientService {
 
 
     public void delete(Long id) {
-        patientRepository.deleteIfValidId(id);
+        patientRepository.deleteOrThrow(id);
     }
 
 }

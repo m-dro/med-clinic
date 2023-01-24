@@ -12,7 +12,7 @@ public interface AbstractRepository<T> extends JpaRepository<T, Long> {
         return findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
-    default void deleteIfValidId(Long id) {
+    default void deleteOrThrow(Long id) {
         if (id == null) {
             throw new NullPointerException("Id must not be null");
         }

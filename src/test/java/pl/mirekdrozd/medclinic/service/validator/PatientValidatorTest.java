@@ -9,7 +9,7 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import pl.mirekdrozd.medclinic.exception.ValidationException;
 import pl.mirekdrozd.medclinic.repository.model.Gender;
-import pl.mirekdrozd.medclinic.service.dto.RequestPatientDto;
+import pl.mirekdrozd.medclinic.service.dto.PatientDtoIn;
 
 import java.util.Arrays;
 
@@ -19,26 +19,26 @@ import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 class PatientValidatorTest {
 
     PatientValidator patientValidator;
-    RequestPatientDto requestPatientDto;
+    PatientDtoIn patientDtoIn;
 
-    private RequestPatientDto getValidRequestPatientDto() {
-        requestPatientDto = new RequestPatientDto();
-        requestPatientDto.setFirstName("Jacek");
-        requestPatientDto.setLastName("Placek");
-        requestPatientDto.setGender("MALE");
-        requestPatientDto.setPesel("92012674117");
-        requestPatientDto.setDateOfBirth("1995-05-12");
-        return requestPatientDto;
+    private PatientDtoIn getValidRequestPatientDto() {
+        patientDtoIn = new PatientDtoIn();
+        patientDtoIn.setFirstName("Jacek");
+        patientDtoIn.setLastName("Placek");
+        patientDtoIn.setGender("MALE");
+        patientDtoIn.setPesel("92012674117");
+        patientDtoIn.setDateOfBirth("1995-05-12");
+        return patientDtoIn;
     }
 
-    private PatientValidator getSimplePatientValidator(RequestPatientDto requestPatientDto) {
-        return new PatientValidator(requestPatientDto);
+    private PatientValidator getSimplePatientValidator(PatientDtoIn patientDtoIn) {
+        return new PatientValidator(patientDtoIn);
     }
 
     @BeforeEach
     void setUp() {
-        requestPatientDto = getValidRequestPatientDto();
-        patientValidator = getSimplePatientValidator(requestPatientDto);
+        patientDtoIn = getValidRequestPatientDto();
+        patientValidator = getSimplePatientValidator(patientDtoIn);
     }
 
     @Test
@@ -51,7 +51,7 @@ class PatientValidatorTest {
     @DisplayName("Should throw ValidationException with specific message if firstName in RequestPatientDto is null")
     void shouldThrowIfFirstNameIsNull() {
         //given
-        requestPatientDto.setFirstName(null);
+        patientDtoIn.setFirstName(null);
         //when & then
         assertThatThrownBy(patientValidator::validate)
                 .isInstanceOf(ValidationException.class)
@@ -62,7 +62,7 @@ class PatientValidatorTest {
     @DisplayName("Should throw ValidationException with specific message if lastName in RequestPatientDto is null")
     void shouldThrowIfLastNameIsNull() {
         //given
-        requestPatientDto.setLastName(null);
+        patientDtoIn.setLastName(null);
         //when & then
         assertThatThrownBy(patientValidator::validate)
                 .isInstanceOf(ValidationException.class)
@@ -73,7 +73,7 @@ class PatientValidatorTest {
     @DisplayName("Should throw ValidationException with specific message if dateOfBirth in RequestPatientDto is null")
     void shouldThrowIfDateOfBirthIsNull() {
         //given
-        requestPatientDto.setDateOfBirth(null);
+        patientDtoIn.setDateOfBirth(null);
         //when & then
         assertThatThrownBy(patientValidator::validate)
                 .isInstanceOf(ValidationException.class)
@@ -84,7 +84,7 @@ class PatientValidatorTest {
     @DisplayName("Should throw ValidationException with specific message if pesel in RequestPatientDto is null")
     void shouldThrowIfPeselIsNull() {
         //given
-        requestPatientDto.setPesel(null);
+        patientDtoIn.setPesel(null);
         //when & then
         assertThatThrownBy(patientValidator::validate)
                 .isInstanceOf(ValidationException.class)
@@ -95,7 +95,7 @@ class PatientValidatorTest {
     @DisplayName("Should throw ValidationException with specific message if gender in RequestPatientDto is null")
     void shouldThrowIfGenderIsNull() {
         //given
-        requestPatientDto.setGender(null);
+        patientDtoIn.setGender(null);
         //when & then
         assertThatThrownBy(patientValidator::validate)
                 .isInstanceOf(ValidationException.class)
@@ -107,7 +107,7 @@ class PatientValidatorTest {
     @DisplayName("Should throw exception if first name has incorrect length")
     void shouldThrowExceptionIfFirstNameHasIncorrectLength(String firstName) {
         // given
-        requestPatientDto.setFirstName(firstName);
+        patientDtoIn.setFirstName(firstName);
         // when & then
         assertThatThrownBy(patientValidator::validate)
                 .isInstanceOf(ValidationException.class)
@@ -121,7 +121,7 @@ class PatientValidatorTest {
     @DisplayName("Should throw ValidationException if first name is blank")
     void shouldThrowValidationExceptionIfFirstNameIsBlank(String firstName) {
         // given
-        requestPatientDto.setFirstName(firstName);
+        patientDtoIn.setFirstName(firstName);
         // when & then
         assertThatThrownBy(patientValidator::validate)
                 .isInstanceOf(ValidationException.class)
@@ -136,7 +136,7 @@ class PatientValidatorTest {
     @DisplayName("Should throw ValidationException if first name includes non-letter characters")
     void shouldThrowValidationExceptionIfFirstNameIncludesNonLetterCharacters(String firstName) {
         // given
-        requestPatientDto.setFirstName(firstName);
+        patientDtoIn.setFirstName(firstName);
         // when & then
         assertThatThrownBy(patientValidator::validate)
                 .isInstanceOf(ValidationException.class)
@@ -150,7 +150,7 @@ class PatientValidatorTest {
     @DisplayName("Should throw ValidationException if first name has leading and/or trailing whitespace")
     void shouldThrowValidationExceptionIfFirstNameHasLeadingOrTrailingWhitespace(String firstName) {
         // given
-        requestPatientDto.setFirstName(firstName);
+        patientDtoIn.setFirstName(firstName);
         // when & then
         assertThatThrownBy(patientValidator::validate)
                 .isInstanceOf(ValidationException.class)
@@ -164,7 +164,7 @@ class PatientValidatorTest {
     @DisplayName("Should throw ValidationException if pesel has incorrect checksum")
     void shouldThrowValidationExceptionIfPeselHasIncorrectChecksum(String pesel) {
         // given
-        requestPatientDto.setPesel(pesel);
+        patientDtoIn.setPesel(pesel);
         // when & then
         assertThatThrownBy(patientValidator::validate)
                 .isInstanceOf(ValidationException.class)
@@ -178,7 +178,7 @@ class PatientValidatorTest {
     @DisplayName("Should NOT throw ValidationException if pesel has correct checksum")
     void shouldNotThrowValidationExceptionIfPeselHasCorrectChecksum(String pesel) {
         // given
-        requestPatientDto.setPesel(pesel);
+        patientDtoIn.setPesel(pesel);
         // when & then
         assertThatNoException().isThrownBy(patientValidator::validate);
     }
@@ -188,7 +188,7 @@ class PatientValidatorTest {
     @DisplayName("Should throw ValidationException if gender has invalid value")
     void shouldThrowValidationExceptionIfGenderHasInvalidValue(String gender) {
         // given
-        requestPatientDto.setGender(gender);
+        patientDtoIn.setGender(gender);
         // when & then
         assertThatThrownBy(patientValidator::validate)
                 .isInstanceOf(ValidationException.class)
@@ -202,7 +202,7 @@ class PatientValidatorTest {
     @DisplayName("Should NOT throw ValidationException if gender has acceptable value")
     void shouldNotThrowValidationExceptionIfGenderHasAcceptableValue(String gender) {
         // given
-        requestPatientDto.setGender(gender);
+        patientDtoIn.setGender(gender);
         // when & then
         assertThatNoException().isThrownBy(patientValidator::validate);
     }
@@ -212,7 +212,7 @@ class PatientValidatorTest {
     @DisplayName("Should throw exception if date of birth is in the future")
     void shouldThrowExceptionIfDateOfBirthIsInTheFuture(String dateOfBirth) {
         // given
-        requestPatientDto.setDateOfBirth(dateOfBirth);
+        patientDtoIn.setDateOfBirth(dateOfBirth);
         // when & then
         assertThatThrownBy(patientValidator::validate)
                 .isInstanceOf(ValidationException.class)
@@ -226,7 +226,7 @@ class PatientValidatorTest {
     @DisplayName("Should NOT throw ValidationException if date of birth has acceptable value")
     void shouldNotThrowValidationExceptionIfDateOfBirthHasAcceptableValue(String dateOfBirth) {
         // given
-        requestPatientDto.setDateOfBirth(dateOfBirth);
+        patientDtoIn.setDateOfBirth(dateOfBirth);
         // when & then
         assertThatNoException().isThrownBy(patientValidator::validate);
     }
@@ -236,7 +236,7 @@ class PatientValidatorTest {
     @DisplayName("Should throw ValidationException if pesel contains non-numeric characters")
     void shouldThrowValidationExceptionIfPeselContainsNonNumericCharacters(String pesel) {
         // given
-        requestPatientDto.setPesel(pesel);
+        patientDtoIn.setPesel(pesel);
         // when & then
         assertThatThrownBy(patientValidator::validate)
                 .isInstanceOf(ValidationException.class)

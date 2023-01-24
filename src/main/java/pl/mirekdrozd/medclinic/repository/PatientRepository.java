@@ -3,6 +3,8 @@ package pl.mirekdrozd.medclinic.repository;
 import org.springframework.stereotype.Repository;
 import pl.mirekdrozd.medclinic.repository.model.Patient;
 
+import javax.persistence.EntityNotFoundException;
+
 @Repository
 public interface PatientRepository extends AbstractRepository<Patient> {
 
@@ -13,5 +15,10 @@ public interface PatientRepository extends AbstractRepository<Patient> {
             throw new IllegalArgumentException("This pesel is already taken");
         }
         return false;
+    }
+
+    @Override
+    default Patient getOrThrow(Long id) {
+        return findById(id).orElseThrow(() -> new EntityNotFoundException("Patient with id '" + id + "' not found"));
     }
 }

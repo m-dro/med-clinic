@@ -2,7 +2,7 @@ package pl.mirekdrozd.medclinic.service.validator;
 
 import pl.mirekdrozd.medclinic.exception.ValidationException;
 import pl.mirekdrozd.medclinic.repository.model.Gender;
-import pl.mirekdrozd.medclinic.service.dto.RequestPatientDto;
+import pl.mirekdrozd.medclinic.service.dto.PatientDtoIn;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -21,10 +21,10 @@ public class PatientValidator {
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private final List<Violation> violations = new ArrayList<>();
-    private final RequestPatientDto requestPatientDto;
+    private final PatientDtoIn patientDtoIn;
 
-    public PatientValidator(RequestPatientDto requestPatientDto) {
-        this.requestPatientDto = requestPatientDto;
+    public PatientValidator(PatientDtoIn patientDtoIn) {
+        this.patientDtoIn = patientDtoIn;
     }
 
     private void result() {
@@ -45,11 +45,11 @@ public class PatientValidator {
     }
 
     private void nullCheck() {
-        boolean nullFound = isNull(requestPatientDto.getFirstName())
-                || isNull(requestPatientDto.getLastName())
-                || isNull(requestPatientDto.getGender())
-                || isNull(requestPatientDto.getPesel())
-                || isNull(requestPatientDto.getDateOfBirth());
+        boolean nullFound = isNull(patientDtoIn.getFirstName())
+                || isNull(patientDtoIn.getLastName())
+                || isNull(patientDtoIn.getGender())
+                || isNull(patientDtoIn.getPesel())
+                || isNull(patientDtoIn.getDateOfBirth());
         if (nullFound) {
             throw new ValidationException("Missing fields", violations);
         }
@@ -61,7 +61,7 @@ public class PatientValidator {
 
     private PatientValidator validFirstName() {
         String fieldName = "First name";
-        String value = requestPatientDto.getFirstName();
+        String value = patientDtoIn.getFirstName();
         boolean valid = hasCorrectLength(fieldName, value, FIRST_NAME_MIN_LENGTH, FIRST_NAME_MAX_LENGTH)
                 && isNotBlank(fieldName, value)
                 && hasLeadingOrTrailingWhitespace(fieldName, value)
@@ -71,7 +71,7 @@ public class PatientValidator {
 
     private PatientValidator validLastName() {
         String fieldName = "Last name";
-        String value = requestPatientDto.getLastName();
+        String value = patientDtoIn.getLastName();
         boolean valid = hasCorrectLength(fieldName, value, LAST_NAME_MIN_LENGTH, LAST_NAME_MAX_LENGTH)
                 && isNotBlank(fieldName, value)
                 && hasLeadingOrTrailingWhitespace(fieldName, value)
@@ -81,7 +81,7 @@ public class PatientValidator {
 
     private PatientValidator validDateOfBirth() {
         String fieldName = "Date of birth";
-        String value = requestPatientDto.getDateOfBirth();
+        String value = patientDtoIn.getDateOfBirth();
         LocalDate parsedDate = parseDate(fieldName, value);
         if (parsedDate != null) {
             isInFuture(fieldName, parsedDate);
@@ -91,14 +91,14 @@ public class PatientValidator {
 
     private PatientValidator validGender() {
         String fieldName = "Gender";
-        String value = requestPatientDto.getGender().toUpperCase();
+        String value = patientDtoIn.getGender().toUpperCase();
         hasAcceptableValue(fieldName, value);
         return this;
     }
 
     private PatientValidator validPesel() {
         String fieldName = "Pesel";
-        String value = requestPatientDto.getPesel();
+        String value = patientDtoIn.getPesel();
         boolean valid = hasNumbersOnly(fieldName, value)
                 && hasCorrectLength(fieldName, value, VALID_PESEL_LENGTH, VALID_PESEL_LENGTH)
                 && hasCorrectChecksum(fieldName, value);
